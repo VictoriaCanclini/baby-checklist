@@ -52,6 +52,41 @@ export default function App() {
       cats.map(cat => cat.id === catId ? { ...cat, expanded: !cat.expanded } : cat)
     )
 
+  const deleteItem = (catId, itemId) =>
+    setCategories(cats =>
+      cats.map(cat =>
+        cat.id === catId
+          ? { ...cat, items: cat.items.filter(i => i.id !== itemId) }
+          : cat
+      )
+    )
+
+  const updateItem = (catId, itemId, newText) =>
+    setCategories(cats =>
+      cats.map(cat =>
+        cat.id === catId
+          ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, text: newText } : i) }
+          : cat
+      )
+    )
+
+  const updateItemStatus = (catId, itemId, status) =>
+    setCategories(cats =>
+      cats.map(cat =>
+        cat.id === catId
+          ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, status } : i) }
+          : cat
+      )
+    )
+
+  const deleteCategory = (catId) =>
+    setCategories(cats => cats.filter(c => c.id !== catId))
+
+  const updateCategory = (catId, updates) =>
+    setCategories(cats =>
+      cats.map(cat => cat.id === catId ? { ...cat, ...updates } : cat)
+    )
+
   const addCategory = () => {
     if (!newCatText.trim()) return
     setCategories(cats => [
@@ -80,6 +115,11 @@ export default function App() {
             onToggleItem={itemId => toggleItem(cat.id, itemId)}
             onAddItem={text => addItem(cat.id, text)}
             onToggle={() => toggleCategory(cat.id)}
+            onDeleteItem={itemId => deleteItem(cat.id, itemId)}
+            onUpdateItem={(itemId, text) => updateItem(cat.id, itemId, text)}
+            onSetItemStatus={(itemId, status) => updateItemStatus(cat.id, itemId, status)}
+            onDelete={() => deleteCategory(cat.id)}
+            onUpdate={updates => updateCategory(cat.id, updates)}
           />
         ))}
 
