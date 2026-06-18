@@ -1,6 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
 import ChecklistItem from './ChecklistItem'
 
+function GripIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
+      <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+      <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
+    </svg>
+  )
+}
+
 function ChevronIcon({ open }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
@@ -29,7 +39,7 @@ function TrashIcon() {
   )
 }
 
-export default function CategoryCard({ category, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onDelete, onUpdate }) {
+export default function CategoryCard({ category, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onDelete, onUpdate }) {
   const [newItemText, setNewItemText] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -128,8 +138,22 @@ export default function CategoryCard({ category, onToggleItem, onAddItem, onTogg
   }
 
   return (
-    <div className="category-card">
+    <div
+      className={`category-card${isDragging ? ' dragging' : ''}${isDragOver ? ' drag-over' : ''}`}
+      onDragOver={e => { e.preventDefault(); onDragOver() }}
+      onDrop={e => { e.preventDefault(); onDrop() }}
+    >
       <div className="category-header" onClick={onToggle} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onToggle()}>
+        <div
+          className="drag-handle"
+          draggable
+          onDragStart={e => { e.stopPropagation(); onDragStart() }}
+          onDragEnd={onDragEnd}
+          onClick={e => e.stopPropagation()}
+          title="Arrastrar para reordenar"
+        >
+          <GripIcon />
+        </div>
         <div className="category-icon-wrap">{category.icon}</div>
         <div className="category-info">
           <h3>{category.name}</h3>

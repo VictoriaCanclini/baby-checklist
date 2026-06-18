@@ -180,6 +180,42 @@
   flex-shrink: 0;
 }
 
+/* ── Drag handle ── */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+  color: var(--border);
+  cursor: grab;
+  transition: color 0.15s;
+  padding: 4px 0;
+}
+
+.drag-handle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.category-header:hover .drag-handle {
+  color: var(--text-muted);
+}
+
+/* ── Drag states ── */
+.category-card.dragging {
+  opacity: 0.4;
+}
+
+.category-card.drag-over {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
 /* ── Category header action buttons (edit/delete) ── */
 .cat-header-actions {
   display: flex;

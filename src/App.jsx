@@ -18,6 +18,8 @@ export default function App() {
   })
   const [newCatText, setNewCatText] = useState('')
   const [addingCat, setAddingCat] = useState(false)
+  const [dragIndex, setDragIndex] = useState(null)
+  const [dragOverIndex, setDragOverIndex] = useState(null)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(categories))
@@ -87,6 +89,29 @@ export default function App() {
       cats.map(cat => cat.id === catId ? { ...cat, ...updates } : cat)
     )
 
+  const reorderCategories = (from, to) => {
+    setCategories(cats => {
+      const result = [...cats]
+      const [moved] = result.splice(from, 1)
+      result.splice(to, 0, moved)
+      return result
+    })
+  }
+
+  const handleDragStart = (index) => setDragIndex(index)
+  const handleDragOver = (index) => setDragOverIndex(index)
+  const handleDrop = (toIndex) => {
+    if (dragIndex !== null && dragIndex !== toIndex) {
+      reorderCategories(dragIndex, toIndex)
+    }
+    setDragIndex(null)
+    setDragOverIndex(null)
+  }
+  const handleDragEnd = () => {
+    setDragIndex(null)
+    setDragOverIndex(null)
+  }
+
   const addCategory = () => {
     if (!newCatText.trim()) return
     setCategories(cats => [
@@ -108,10 +133,17 @@ export default function App() {
 
       <div className="categories-section">
         <p className="section-label">CATEGORÍAS</p>
-        {categories.map(cat => (
+        {categories.map((cat, index) => (
           <CategoryCard
             key={cat.id}
             category={cat}
+            index={index}
+            isDragging={dragIndex === index}
+            isDragOver={dragOverIndex === index && dragOverIndex !== dragIndex}
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={() => handleDragOver(index)}
+            onDrop={() => handleDrop(index)}
+            onDragEnd={handleDragEnd}
             onToggleItem={itemId => toggleItem(cat.id, itemId)}
             onAddItem={text => addItem(cat.id, text)}
             onToggle={() => toggleCategory(cat.id)}
