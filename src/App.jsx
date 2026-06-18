@@ -3,6 +3,7 @@ import { initialCategories } from './data/initialData'
 import Header from './components/Header'
 import StatsBar from './components/StatsBar'
 import CategoryCard from './components/CategoryCard'
+import FilterBar from './components/FilterBar'
 import './App.css'
 
 const STORAGE_KEY = 'baby-checklist-v1'
@@ -20,6 +21,7 @@ export default function App() {
   const [addingCat, setAddingCat] = useState(false)
   const [dragIndex, setDragIndex] = useState(null)
   const [dragOverIndex, setDragOverIndex] = useState(null)
+  const [activeFilter, setActiveFilter] = useState('all')
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(categories))
@@ -131,12 +133,23 @@ export default function App() {
       />
       <StatsBar total={total} done={done} pending={pending} />
 
+      <FilterBar
+        active={activeFilter}
+        onChange={setActiveFilter}
+        counts={{
+          all: total,
+          urgentes: allItems.filter(i => i.status === 'urgente').length,
+          pendientes: allItems.filter(i => !i.done).length,
+        }}
+      />
+
       <div className="categories-section">
         <p className="section-label">CATEGORÍAS</p>
         {categories.map((cat, index) => (
           <CategoryCard
             key={cat.id}
             category={cat}
+            activeFilter={activeFilter}
             index={index}
             isDragging={dragIndex === index}
             isDragOver={dragOverIndex === index && dragOverIndex !== dragIndex}

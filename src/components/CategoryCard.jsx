@@ -39,7 +39,13 @@ function TrashIcon() {
   )
 }
 
-export default function CategoryCard({ category, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onDelete, onUpdate }) {
+const matchesFilter = (item, filter) => {
+  if (filter === 'urgentes') return item.status === 'urgente'
+  if (filter === 'pendientes') return !item.done
+  return true
+}
+
+export default function CategoryCard({ category, activeFilter, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onDelete, onUpdate }) {
   const [newItemText, setNewItemText] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -50,9 +56,12 @@ export default function CategoryCard({ category, isDragging, isDragOver, onDragS
     if (isEditing) nameInputRef.current?.focus()
   }, [isEditing])
 
+  const visibleItems = category.items.filter(i => matchesFilter(i, activeFilter))
   const done = category.items.filter(i => i.done).length
   const total = category.items.length
   const progress = total > 0 ? (done / total) * 100 : 0
+
+  if (activeFilter !== 'all' && visibleItems.length === 0) return null
 
   const handleAdd = () => {
     if (!newItemText.trim()) return
@@ -180,7 +189,7 @@ export default function CategoryCard({ category, isDragging, isDragOver, onDragS
 
       {category.expanded && (
         <div className="category-body">
-          {category.items.map(item => (
+          {visibleItems.map(item => (
             <ChecklistItem
               key={item.id}
               item={item}
