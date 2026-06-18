@@ -1,0 +1,52 @@
+:root {
+  --bg: #161514;
+  --card-bg: #1f1e1d;
+  --card-bg-2: #252422;
+  --border: #2e2c2a;
+  --text: #ede9e4;
+  --text-muted: #7a746d;
+  --text-done: #4a4540;
+  --accent: #B9A089;
+  --accent-light: rgba(185, 160, 137, 0.12);
+  --accent-border: rgba(185, 160, 137, 0.28);
+  --red: #c97070;
+  --urgente-bg: rgba(201, 112, 112, 0.12);
+  --urgente-text: #c97070;
+  --urgente-border: rgba(201, 112, 112, 0.28);
+  --pendiente-bg: rgba(185, 160, 137, 0.1);
+  --pendiente-text: #B9A089;
+  --pendiente-border: rgba(185, 160, 137, 0.22);
+
+  font: 15px/150% system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}

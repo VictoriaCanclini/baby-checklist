@@ -1,0 +1,55 @@
+export const initialCategories = [
+  {
+    id: 1,
+    name: 'Bolso del hospital',
+    subtitle: 'Ropa, documentos, higiene',
+    icon: '🏥',
+    expanded: true,
+    items: [
+      { id: 101, text: 'Documentos del DNI', done: true, status: null },
+      { id: 102, text: 'Ropa para la mamá', done: true, status: null },
+      { id: 103, text: 'Ropa para el bebé (onesies, gorrito)', done: false, status: 'urgente' },
+      { id: 104, text: 'Toallitas y pañales recién nacido', done: false, status: 'pendiente' },
+      { id: 105, text: 'Cargador del celular', done: true, status: null },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Cuarto del bebé',
+    subtitle: 'Muebles, decoración, seguridad',
+    icon: '🛏️',
+    expanded: true,
+    items: [
+      { id: 201, text: 'Cuna o moisés', done: true, status: null },
+      { id: 202, text: 'Cambiador', done: false, status: 'pendiente' },
+      { id: 203, text: 'Sábanas y protector de cuna', done: false, status: 'pendiente' },
+      { id: 204, text: 'Humidificador', done: false, status: 'pendiente' },
+    ],
+  },
+  {
+    id: 3,
+    name: 'Ropa y accesorios',
+    subtitle: 'Tallas 0-3 meses',
+    icon: '👕',
+    expanded: true,
+    items: [
+      { id: 301, text: 'Bodies manga larga', done: true, status: null },
+      { id: 302, text: 'Pijamas con pie', done: true, status: null },
+      { id: 303, text: 'Corritos y manoplas', done: true, status: null },
+      { id: 304, text: 'Medias recién nacido', done: true, status: null },
+      { id: 305, text: 'Manta swaddle', done: false, status: 'urgente' },
+    ],
+  },
+  {
+    id: 4,
+    name: 'Documentos y trámites',
+    subtitle: 'Obra social, registro civil',
+    icon: '📋',
+    expanded: false,
+    items: [
+      { id: 401, text: 'Registro civil', done: false, status: null },
+      { id: 402, text: 'Obra social del bebé', done: false, status: null },
+      { id: 403, text: 'Carpeta de maternidad', done: false, status: null },
+    ],
+  },
+]
