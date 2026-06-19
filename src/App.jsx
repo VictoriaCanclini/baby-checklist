@@ -1,22 +1,15 @@
 import { useState, useEffect } from 'react'
 import { initialCategories } from './data/initialData'
+import { supabase } from './supabase'
 import Header from './components/Header'
 import StatsBar from './components/StatsBar'
-import CategoryCard from './components/CategoryCard'
 import FilterBar from './components/FilterBar'
+import CategoryCard from './components/CategoryCard'
 import './App.css'
 
-const STORAGE_KEY = 'baby-checklist-v1'
-
 export default function App() {
-  const [categories, setCategories] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? JSON.parse(saved) : initialCategories
-    } catch {
-      return initialCategories
-    }
-  })
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
   const [newCatText, setNewCatText] = useState('')
   const [addingCat, setAddingCat] = useState(false)
   const [dragIndex, setDragIndex] = useState(null)
@@ -24,8 +17,40 @@ export default function App() {
   const [activeFilter, setActiveFilter] = useState('all')
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(categories))
-  }, [categories])
+    // Carga inicial
+    supabase
+      .from('checklist')
+      .select('categories')
+      .eq('id', 'main')
+      .single()
+      .then(({ data, error }) => {
+        if (error || !data) {
+          // Primera vez — inicializa con los datos por defecto
+          supabase.from('checklist').upsert({ id: 'main', categories: initialCategories }).then()
+          setCategories(initialCategories)
+        } else {
+          setCategories(data.categories)
+        }
+        setLoading(false)
+      })
+
+    // Suscripción a cambios en tiempo real
+    const channel = supabase
+      .channel('checklist-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'checklist', filter: 'id=eq.main' },
+        (payload) => setCategories(payload.new.categories)
+      )
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
+  }, [])
+
+  const save = (newCategories) => {
+    setCategories(newCategories)
+    supabase.from('checklist').upsert({ id: 'main', categories: newCategories }).then()
+  }
 
   const allItems = categories.flatMap(c => c.items)
   const total = allItems.length
@@ -34,78 +59,59 @@ export default function App() {
   const progress = total > 0 ? Math.round((done / total) * 100) : 0
 
   const toggleItem = (catId, itemId) =>
-    setCategories(cats =>
-      cats.map(cat =>
-        cat.id === catId
-          ? { ...cat, items: cat.items.map(item => item.id === itemId ? { ...item, done: !item.done } : item) }
-          : cat
-      )
-    )
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: cat.items.map(item => item.id === itemId ? { ...item, done: !item.done } : item) }
+        : cat
+    ))
 
   const addItem = (catId, text) =>
-    setCategories(cats =>
-      cats.map(cat =>
-        cat.id === catId
-          ? { ...cat, items: [...cat.items, { id: Date.now(), text: text.trim(), done: false, status: null }] }
-          : cat
-      )
-    )
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: [...cat.items, { id: Date.now(), text: text.trim(), done: false, status: null }] }
+        : cat
+    ))
 
   const toggleCategory = (catId) =>
-    setCategories(cats =>
-      cats.map(cat => cat.id === catId ? { ...cat, expanded: !cat.expanded } : cat)
-    )
+    save(categories.map(cat => cat.id === catId ? { ...cat, expanded: !cat.expanded } : cat))
 
   const deleteItem = (catId, itemId) =>
-    setCategories(cats =>
-      cats.map(cat =>
-        cat.id === catId
-          ? { ...cat, items: cat.items.filter(i => i.id !== itemId) }
-          : cat
-      )
-    )
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: cat.items.filter(i => i.id !== itemId) }
+        : cat
+    ))
 
   const updateItem = (catId, itemId, newText) =>
-    setCategories(cats =>
-      cats.map(cat =>
-        cat.id === catId
-          ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, text: newText } : i) }
-          : cat
-      )
-    )
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, text: newText } : i) }
+        : cat
+    ))
 
   const updateItemStatus = (catId, itemId, status) =>
-    setCategories(cats =>
-      cats.map(cat =>
-        cat.id === catId
-          ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, status } : i) }
-          : cat
-      )
-    )
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, status } : i) }
+        : cat
+    ))
 
-  const deleteCategory = (catId) =>
-    setCategories(cats => cats.filter(c => c.id !== catId))
+  const deleteCategory = (catId) => save(categories.filter(c => c.id !== catId))
 
   const updateCategory = (catId, updates) =>
-    setCategories(cats =>
-      cats.map(cat => cat.id === catId ? { ...cat, ...updates } : cat)
-    )
+    save(categories.map(cat => cat.id === catId ? { ...cat, ...updates } : cat))
 
   const reorderCategories = (from, to) => {
-    setCategories(cats => {
-      const result = [...cats]
-      const [moved] = result.splice(from, 1)
-      result.splice(to, 0, moved)
-      return result
-    })
+    const result = [...categories]
+    const [moved] = result.splice(from, 1)
+    result.splice(to, 0, moved)
+    save(result)
   }
 
   const handleDragStart = (index) => setDragIndex(index)
   const handleDragOver = (index) => setDragOverIndex(index)
   const handleDrop = (toIndex) => {
-    if (dragIndex !== null && dragIndex !== toIndex) {
-      reorderCategories(dragIndex, toIndex)
-    }
+    if (dragIndex !== null && dragIndex !== toIndex) reorderCategories(dragIndex, toIndex)
     setDragIndex(null)
     setDragOverIndex(null)
   }
@@ -116,12 +122,17 @@ export default function App() {
 
   const addCategory = () => {
     if (!newCatText.trim()) return
-    setCategories(cats => [
-      ...cats,
-      { id: Date.now(), name: newCatText.trim(), subtitle: '', icon: '📦', expanded: true, items: [] },
-    ])
+    save([...categories, { id: Date.now(), name: newCatText.trim(), subtitle: '', icon: '📦', expanded: true, items: [] }])
     setNewCatText('')
     setAddingCat(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="app loading">
+        <div className="loading-spinner" />
+      </div>
+    )
   }
 
   return (

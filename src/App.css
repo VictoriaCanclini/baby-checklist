@@ -448,6 +448,15 @@
   flex-shrink: 0;
 }
 
+.confirm-actions .cancel-btn {
+  width: auto;
+  height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+}
+
 .confirm-delete-btn {
   height: 32px;
   padding: 0 14px;
