@@ -35,6 +35,7 @@
   color: var(--text-muted);
   margin-left: 32px;
   margin-bottom: 20px;
+  margin-top: 2px;
 }
 
 .progress-card {
@@ -71,6 +72,101 @@
   background: var(--accent);
   border-radius: 99px;
   transition: width 0.4s ease;
+}
+
+/* ── Admin ── */
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.admin-lock-btn {
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  margin-top: 4px;
+}
+
+.admin-lock-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.admin-lock-btn:hover {
+  border-color: var(--border);
+  color: var(--accent);
+}
+
+.admin-lock-btn.active {
+  color: var(--accent);
+}
+
+.admin-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.admin-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  border-radius: 99px;
+  padding: 3px 10px;
+}
+
+.admin-password-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.admin-password-input {
+  width: 140px;
+  height: 30px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.admin-password-input:focus {
+  border-color: var(--accent);
+}
+
+.admin-password-input.error {
+  border-color: var(--red);
+}
+
+.admin-password-input::placeholder {
+  color: var(--text-muted);
+}
+
+.admin-password-input.error::placeholder {
+  color: var(--red);
 }
 
 /* ── Stats ── */

@@ -15,6 +15,14 @@ export default function App() {
   const [dragIndex, setDragIndex] = useState(null)
   const [dragOverIndex, setDragOverIndex] = useState(null)
   const [activeFilter, setActiveFilter] = useState('all')
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  const ADMIN_PASSWORD = 'valentino2026'
+
+  const handleAdminUnlock = (password) => {
+    if (password === ADMIN_PASSWORD) { setIsAdmin(true); return true }
+    return false
+  }
 
   useEffect(() => {
     // Carga inicial
@@ -152,9 +160,12 @@ export default function App() {
   return (
     <div className="app">
       <Header
-        title="Preparativos para el bebé"
-        subtitle="Todo listo antes de que llegue"
+        title="Lista de regalos"
+        subtitle="¡Ayudanos a preparar la llegada del bebé!"
         progress={progress}
+        isAdmin={isAdmin}
+        onAdminUnlock={handleAdminUnlock}
+        onAdminExit={() => setIsAdmin(false)}
       />
       <StatsBar total={total} done={done} pending={pending} />
 
@@ -175,6 +186,7 @@ export default function App() {
             key={cat.id}
             category={cat}
             activeFilter={activeFilter}
+            isAdmin={isAdmin}
             index={index}
             isDragging={dragIndex === index}
             isDragOver={dragOverIndex === index && dragOverIndex !== dragIndex}
@@ -195,7 +207,7 @@ export default function App() {
           />
         ))}
 
-        {addingCat ? (
+        {isAdmin && addingCat ? (
           <div className="new-cat-row">
             <input
               className="add-item-input"
@@ -211,11 +223,11 @@ export default function App() {
             <button className="add-item-btn" onClick={addCategory}>+</button>
             <button className="cancel-btn" onClick={() => setAddingCat(false)}>✕</button>
           </div>
-        ) : (
+        ) : isAdmin ? (
           <button className="add-category-btn" onClick={() => setAddingCat(true)}>
             + Nueva categoría
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   )

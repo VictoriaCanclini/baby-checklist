@@ -45,7 +45,7 @@ const matchesFilter = (item, filter) => {
   return true
 }
 
-export default function CategoryCard({ category, activeFilter, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onReserveItem, onUnreserveItem, onDelete, onUpdate }) {
+export default function CategoryCard({ category, activeFilter, isAdmin, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onReserveItem, onUnreserveItem, onDelete, onUpdate }) {
   const [newItemText, setNewItemText] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -153,30 +153,34 @@ export default function CategoryCard({ category, activeFilter, isDragging, isDra
       onDrop={e => { e.preventDefault(); onDrop() }}
     >
       <div className="category-header" onClick={onToggle} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onToggle()}>
-        <div
-          className="drag-handle"
-          draggable
-          onDragStart={e => { e.stopPropagation(); onDragStart() }}
-          onDragEnd={onDragEnd}
-          onClick={e => e.stopPropagation()}
-          title="Arrastrar para reordenar"
-        >
-          <GripIcon />
-        </div>
+        {isAdmin && (
+          <div
+            className="drag-handle"
+            draggable
+            onDragStart={e => { e.stopPropagation(); onDragStart() }}
+            onDragEnd={onDragEnd}
+            onClick={e => e.stopPropagation()}
+            title="Arrastrar para reordenar"
+          >
+            <GripIcon />
+          </div>
+        )}
         <div className="category-icon-wrap">{category.icon}</div>
         <div className="category-info">
           <h3>{category.name}</h3>
           {category.subtitle && <p>{category.subtitle}</p>}
         </div>
         <div className="category-meta">
-          <div className="cat-header-actions">
-            <button className="cat-action-btn" onClick={startEdit} aria-label="Editar categoría">
-              <PencilIcon />
-            </button>
-            <button className="cat-action-btn danger" onClick={handleDeleteClick} aria-label="Eliminar categoría">
-              <TrashIcon />
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="cat-header-actions">
+              <button className="cat-action-btn" onClick={startEdit} aria-label="Editar categoría">
+                <PencilIcon />
+              </button>
+              <button className="cat-action-btn danger" onClick={handleDeleteClick} aria-label="Eliminar categoría">
+                <TrashIcon />
+              </button>
+            </div>
+          )}
           <div className="mini-progress-track">
             <div className="mini-progress-fill" style={{ width: `${progress}%` }} />
           </div>
@@ -193,22 +197,25 @@ export default function CategoryCard({ category, activeFilter, isDragging, isDra
             <ChecklistItem
               key={item.id}
               item={item}
+              isAdmin={isAdmin}
               onDelete={() => onDeleteItem(item.id)}
               onEdit={updates => onUpdateItem(item.id, updates)}
               onReserve={name => onReserveItem(item.id, name)}
               onUnreserve={() => onUnreserveItem(item.id)}
             />
           ))}
-          <div className="add-item-row">
-            <input
-              className="add-item-input"
-              placeholder="Agregar ítem..."
-              value={newItemText}
-              onChange={e => setNewItemText(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAdd()}
-            />
-            <button className="add-item-btn" onClick={handleAdd} aria-label="Agregar">+</button>
-          </div>
+          {isAdmin && (
+            <div className="add-item-row">
+              <input
+                className="add-item-input"
+                placeholder="Agregar ítem..."
+                value={newItemText}
+                onChange={e => setNewItemText(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAdd()}
+              />
+              <button className="add-item-btn" onClick={handleAdd} aria-label="Agregar">+</button>
+            </div>
+          )}
         </div>
       )}
     </div>

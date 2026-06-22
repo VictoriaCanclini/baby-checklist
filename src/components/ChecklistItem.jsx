@@ -38,7 +38,7 @@ function UndoIcon() {
   )
 }
 
-export default function ChecklistItem({ item, onDelete, onEdit, onReserve, onUnreserve }) {
+export default function ChecklistItem({ item, isAdmin, onDelete, onEdit, onReserve, onUnreserve }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(item.text)
   const [editUrl, setEditUrl] = useState(item.url || '')
@@ -128,19 +128,21 @@ export default function ChecklistItem({ item, onDelete, onEdit, onReserve, onUnr
           </button>
         )}
 
-        <div className="item-actions">
-          {item.reserved && (
-            <button className="item-action-btn" onClick={onUnreserve} aria-label="Quitar reserva" title="Quitar reserva">
-              <UndoIcon />
+        {isAdmin && (
+          <div className="item-actions">
+            {item.reserved && (
+              <button className="item-action-btn" onClick={onUnreserve} aria-label="Quitar reserva" title="Quitar reserva">
+                <UndoIcon />
+              </button>
+            )}
+            <button className="item-action-btn" onClick={startEdit} aria-label="Editar ítem">
+              <PencilIcon />
             </button>
-          )}
-          <button className="item-action-btn" onClick={startEdit} aria-label="Editar ítem">
-            <PencilIcon />
-          </button>
-          <button className="item-action-btn danger" onClick={onDelete} aria-label="Eliminar ítem">
-            <TrashIcon />
-          </button>
-        </div>
+            <button className="item-action-btn danger" onClick={onDelete} aria-label="Eliminar ítem">
+              <TrashIcon />
+            </button>
+          </div>
+        )}
       </div>
 
       {isReserving && (
