@@ -1,12 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 
-const STATUSES = [null, 'pendiente', 'urgente']
-
-function TagIcon() {
+function LinkIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-      <line x1="7" y1="7" x2="7.01" y2="7" />
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
     </svg>
   )
 }
@@ -31,84 +29,134 @@ function TrashIcon() {
   )
 }
 
-export default function ChecklistItem({ item, onToggle, onDelete, onEdit, onSetStatus }) {
-  const cycleStatus = () => {
-    const idx = STATUSES.indexOf(item.status)
-    onSetStatus(STATUSES[(idx + 1) % STATUSES.length])
-  }
+function UndoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 7v6h6" />
+      <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+    </svg>
+  )
+}
+
+export default function ChecklistItem({ item, onDelete, onEdit, onReserve, onUnreserve }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState(item.text)
+  const [editUrl, setEditUrl] = useState(item.url || '')
+  const [isReserving, setIsReserving] = useState(false)
+  const [reserverName, setReserverName] = useState('')
   const inputRef = useRef(null)
+  const nameInputRef = useRef(null)
 
   useEffect(() => {
     if (isEditing) inputRef.current?.focus()
   }, [isEditing])
 
+  useEffect(() => {
+    if (isReserving) nameInputRef.current?.focus()
+  }, [isReserving])
+
   const startEdit = () => {
     setEditText(item.text)
+    setEditUrl(item.url || '')
     setIsEditing(true)
   }
 
-  const save = () => {
+  const saveEdit = () => {
     const trimmed = editText.trim()
-    if (trimmed && trimmed !== item.text) onEdit(trimmed)
+    if (trimmed) onEdit({ text: trimmed, url: editUrl.trim() || null })
     setIsEditing(false)
   }
 
-  const cancel = () => {
+  const cancelEdit = () => {
     setEditText(item.text)
+    setEditUrl(item.url || '')
     setIsEditing(false)
+  }
+
+  const handleReserve = () => {
+    const name = reserverName.trim()
+    if (!name) return
+    onReserve(name)
+    setIsReserving(false)
+    setReserverName('')
   }
 
   if (isEditing) {
     return (
       <div className="checklist-item editing">
         <div className="checkbox-placeholder" />
-        <input
-          ref={inputRef}
-          className="item-edit-input"
-          value={editText}
-          onChange={e => setEditText(e.target.value)}
-          onBlur={save}
-          onKeyDown={e => {
-            if (e.key === 'Enter') save()
-            if (e.key === 'Escape') cancel()
-          }}
-        />
+        <div className="item-edit-fields">
+          <input
+            ref={inputRef}
+            className="item-edit-input"
+            value={editText}
+            placeholder="Nombre del ítem"
+            onChange={e => setEditText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') cancelEdit() }}
+          />
+          <input
+            className="item-edit-input item-url-input"
+            value={editUrl}
+            placeholder="Link al producto (opcional)"
+            type="url"
+            onChange={e => setEditUrl(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') cancelEdit() }}
+          />
+        </div>
+        <button className="item-edit-save-btn" onClick={saveEdit}>✓</button>
+        <button className="item-edit-cancel-btn" onClick={cancelEdit}>✕</button>
       </div>
     )
   }
 
   return (
-    <div className={`checklist-item${item.done ? ' done' : ''}`}>
-      <button
-        className={`checkbox${item.done ? ' checked' : ''}`}
-        onClick={onToggle}
-        aria-label={item.done ? 'Desmarcar' : 'Marcar como listo'}
-      >
-        {item.done && (
-          <svg viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="1,5 4.5,8.5 11,1" />
-          </svg>
+    <div className={`checklist-item-wrapper${item.reserved ? ' is-reserved' : ''}`}>
+      <div className="checklist-item">
+        <span className="item-text">{item.text}</span>
+
+        {item.url && (
+          <a href={item.url} target="_blank" rel="noopener noreferrer" className="item-link-btn" aria-label="Ver producto" onClick={e => e.stopPropagation()}>
+            <LinkIcon />
+          </a>
         )}
-      </button>
-      <span className="item-text" onDoubleClick={startEdit}>{item.text}</span>
-      {item.status && (
-        <button className={`badge badge-${item.status} badge-clickable`} onClick={cycleStatus} title="Click para cambiar estado">
-          {item.status}
-        </button>
-      )}
-      <div className="item-actions">
-        <button className={`item-action-btn${item.status ? ' tag-active' : ''}`} onClick={cycleStatus} aria-label="Cambiar estado">
-          <TagIcon />
-        </button>
-        <button className="item-action-btn" onClick={startEdit} aria-label="Editar ítem">
-          <PencilIcon />
-        </button>
-        <button className="item-action-btn danger" onClick={onDelete} aria-label="Eliminar ítem">
-          <TrashIcon />
-        </button>
+
+        {item.reserved ? (
+          <span className="badge badge-reservado">Reservado por {item.reservedBy}</span>
+        ) : (
+          <button className="reserve-btn" onClick={() => setIsReserving(true)}>
+            Reservar
+          </button>
+        )}
+
+        <div className="item-actions">
+          {item.reserved && (
+            <button className="item-action-btn" onClick={onUnreserve} aria-label="Quitar reserva" title="Quitar reserva">
+              <UndoIcon />
+            </button>
+          )}
+          <button className="item-action-btn" onClick={startEdit} aria-label="Editar ítem">
+            <PencilIcon />
+          </button>
+          <button className="item-action-btn danger" onClick={onDelete} aria-label="Eliminar ítem">
+            <TrashIcon />
+          </button>
+        </div>
       </div>
+
+      {isReserving && (
+        <div className="reserve-input-row">
+          <input
+            ref={nameInputRef}
+            className="reserve-name-input"
+            placeholder="Tu nombre..."
+            value={reserverName}
+            onChange={e => setReserverName(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleReserve(); if (e.key === 'Escape') setIsReserving(false) }}
+          />
+          <button className="reserve-confirm-btn" onClick={handleReserve}>Confirmar</button>
+          <button className="cancel-btn" onClick={() => setIsReserving(false)}>✕</button>
+        </div>
+      )}
     </div>
   )
 }

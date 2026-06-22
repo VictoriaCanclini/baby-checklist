@@ -45,7 +45,7 @@ const matchesFilter = (item, filter) => {
   return true
 }
 
-export default function CategoryCard({ category, activeFilter, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onDelete, onUpdate }) {
+export default function CategoryCard({ category, activeFilter, isDragging, isDragOver, onDragStart, onDragOver, onDrop, onDragEnd, onToggleItem, onAddItem, onToggle, onDeleteItem, onUpdateItem, onSetItemStatus, onReserveItem, onUnreserveItem, onDelete, onUpdate }) {
   const [newItemText, setNewItemText] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -193,10 +193,10 @@ export default function CategoryCard({ category, activeFilter, isDragging, isDra
             <ChecklistItem
               key={item.id}
               item={item}
-              onToggle={() => onToggleItem(item.id)}
               onDelete={() => onDeleteItem(item.id)}
-              onEdit={text => onUpdateItem(item.id, text)}
-              onSetStatus={status => onSetItemStatus(item.id, status)}
+              onEdit={updates => onUpdateItem(item.id, updates)}
+              onReserve={name => onReserveItem(item.id, name)}
+              onUnreserve={() => onUnreserveItem(item.id)}
             />
           ))}
           <div className="add-item-row">

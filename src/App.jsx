@@ -82,10 +82,10 @@ export default function App() {
         : cat
     ))
 
-  const updateItem = (catId, itemId, newText) =>
+  const updateItem = (catId, itemId, updates) =>
     save(categories.map(cat =>
       cat.id === catId
-        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, text: newText } : i) }
+        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, ...updates } : i) }
         : cat
     ))
 
@@ -93,6 +93,20 @@ export default function App() {
     save(categories.map(cat =>
       cat.id === catId
         ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, status } : i) }
+        : cat
+    ))
+
+  const reserveItem = (catId, itemId, name) =>
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, reserved: true, reservedBy: name } : i) }
+        : cat
+    ))
+
+  const unreserveItem = (catId, itemId) =>
+    save(categories.map(cat =>
+      cat.id === catId
+        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, reserved: false, reservedBy: null } : i) }
         : cat
     ))
 
@@ -172,8 +186,10 @@ export default function App() {
             onAddItem={text => addItem(cat.id, text)}
             onToggle={() => toggleCategory(cat.id)}
             onDeleteItem={itemId => deleteItem(cat.id, itemId)}
-            onUpdateItem={(itemId, text) => updateItem(cat.id, itemId, text)}
+            onUpdateItem={(itemId, updates) => updateItem(cat.id, itemId, updates)}
             onSetItemStatus={(itemId, status) => updateItemStatus(cat.id, itemId, status)}
+            onReserveItem={(itemId, name) => reserveItem(cat.id, itemId, name)}
+            onUnreserveItem={(itemId) => unreserveItem(cat.id, itemId)}
             onDelete={() => deleteCategory(cat.id)}
             onUpdate={updates => updateCategory(cat.id, updates)}
           />

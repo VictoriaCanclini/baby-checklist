@@ -16,6 +16,10 @@
   --pendiente-bg: rgba(107, 78, 53, 0.12);
   --pendiente-text: #6b4e35;
   --pendiente-border: rgba(107, 78, 53, 0.28);
+  --green: #6b8f5e;
+  --reserved-bg: rgba(107, 143, 94, 0.14);
+  --reserved-text: #4a6e40;
+  --reserved-border: rgba(107, 143, 94, 0.3);
 
   font: 15px/150% system-ui, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
