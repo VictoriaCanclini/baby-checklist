@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import ChecklistItem from './ChecklistItem'
 
+function HeartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  )
+}
+
 function GripIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -94,13 +102,6 @@ export default function CategoryCard({ category, activeFilter, isAdmin, isDraggi
     return (
       <div className="category-card">
         <div className="category-header-edit">
-          <input
-            className="edit-icon-input"
-            value={editFields.icon}
-            onChange={e => setEditFields(f => ({ ...f, icon: e.target.value }))}
-            maxLength={2}
-            aria-label="Ícono"
-          />
           <div className="edit-fields">
             <input
               ref={nameInputRef}
@@ -131,7 +132,6 @@ export default function CategoryCard({ category, activeFilter, isAdmin, isDraggi
     return (
       <div className="category-card">
         <div className="category-header confirm-delete-header">
-          <div className="category-icon-wrap">{category.icon}</div>
           <div className="category-info">
             <h3>{category.name}</h3>
             <p className="confirm-delete-text">¿Eliminar esta categoría y sus {total} ítems?</p>
@@ -164,7 +164,9 @@ export default function CategoryCard({ category, activeFilter, isAdmin, isDraggi
             <GripIcon />
           </div>
         )}
-        <div className="category-icon-wrap">{category.icon}</div>
+        <div className="category-icon-wrap">
+          <HeartIcon />
+        </div>
         <div className="category-info">
           <h3>{category.name}</h3>
           {category.subtitle && <p>{category.subtitle}</p>}
