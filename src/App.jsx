@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react'
+import emailjs from '@emailjs/browser'
 import { initialCategories } from './data/initialData'
 import { supabase } from './supabase'
+
+const EMAILJS_SERVICE_ID = 'service_ayapmaj'
+const EMAILJS_TEMPLATE_ID = 'template_hz6qer9'
+const EMAILJS_PUBLIC_KEY = '2n5-mtzk4gq2FHXhm'
 import Header from './components/Header'
 import StatsBar from './components/StatsBar'
 import FilterBar from './components/FilterBar'
@@ -104,12 +109,25 @@ export default function App() {
         : cat
     ))
 
-  const reserveItem = (catId, itemId, name) =>
-    save(categories.map(cat =>
-      cat.id === catId
-        ? { ...cat, items: cat.items.map(i => i.id === itemId ? { ...i, reserved: true, reservedBy: name } : i) }
-        : cat
+  const reserveItem = (catId, itemId, name) => {
+    const cat = categories.find(c => c.id === catId)
+    const item = cat?.items.find(i => i.id === itemId)
+    save(categories.map(c =>
+      c.id === catId
+        ? { ...c, items: c.items.map(i => i.id === itemId ? { ...i, reserved: true, reservedBy: name } : i) }
+        : c
     ))
+    emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      {
+        item_name: item?.text ?? '',
+        category_name: cat?.name ?? '',
+        reserver_name: name,
+      },
+      EMAILJS_PUBLIC_KEY
+    ).catch(() => {})
+  }
 
   const unreserveItem = (catId, itemId) =>
     save(categories.map(cat =>
