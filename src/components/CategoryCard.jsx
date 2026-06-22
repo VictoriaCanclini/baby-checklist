@@ -40,8 +40,7 @@ function TrashIcon() {
 }
 
 const matchesFilter = (item, filter) => {
-  if (filter === 'urgentes') return item.status === 'urgente'
-  if (filter === 'pendientes') return !item.done
+  if (filter === 'pendientes') return !item.reserved
   return true
 }
 
@@ -57,9 +56,9 @@ export default function CategoryCard({ category, activeFilter, isAdmin, isDraggi
   }, [isEditing])
 
   const visibleItems = category.items.filter(i => matchesFilter(i, activeFilter))
-  const done = category.items.filter(i => i.done).length
+  const reserved = category.items.filter(i => i.reserved).length
   const total = category.items.length
-  const progress = total > 0 ? (done / total) * 100 : 0
+  const progress = total > 0 ? (reserved / total) * 100 : 0
 
   if (activeFilter !== 'all' && visibleItems.length === 0) return null
 
@@ -184,7 +183,7 @@ export default function CategoryCard({ category, activeFilter, isAdmin, isDraggi
           <div className="mini-progress-track">
             <div className="mini-progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <span className="category-count">{done}/{total}</span>
+          <span className="category-count">{reserved}/{total}</span>
           <span className="chevron-icon">
             <ChevronIcon open={category.expanded} />
           </span>

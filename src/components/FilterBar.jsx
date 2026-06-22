@@ -1,6 +1,5 @@
 const FILTERS = [
   { id: 'all', label: 'Todos' },
-  { id: 'urgentes', label: 'Urgentes' },
   { id: 'pendientes', label: 'Pendientes' },
 ]
 

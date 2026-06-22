@@ -1,4 +1,4 @@
-export default function StatsBar({ total, done, pending }) {
+export default function StatsBar({ total, reserved, pending }) {
   return (
     <div className="stats-bar">
       <div className="stat-card">
@@ -6,8 +6,8 @@ export default function StatsBar({ total, done, pending }) {
         <span className="stat-label">Total</span>
       </div>
       <div className="stat-card">
-        <span className="stat-number accent">{done}</span>
-        <span className="stat-label">Listos</span>
+        <span className="stat-number accent">{reserved}</span>
+        <span className="stat-label">Reservados</span>
       </div>
       <div className="stat-card">
         <span className="stat-number red">{pending}</span>

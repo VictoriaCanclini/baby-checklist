@@ -62,9 +62,9 @@ export default function App() {
 
   const allItems = categories.flatMap(c => c.items)
   const total = allItems.length
-  const done = allItems.filter(i => i.done).length
-  const pending = total - done
-  const progress = total > 0 ? Math.round((done / total) * 100) : 0
+  const reserved = allItems.filter(i => i.reserved).length
+  const pending = total - reserved
+  const progress = total > 0 ? Math.round((reserved / total) * 100) : 0
 
   const toggleItem = (catId, itemId) =>
     save(categories.map(cat =>
@@ -167,15 +167,14 @@ export default function App() {
         onAdminUnlock={handleAdminUnlock}
         onAdminExit={() => setIsAdmin(false)}
       />
-      <StatsBar total={total} done={done} pending={pending} />
+      <StatsBar total={total} reserved={reserved} pending={pending} />
 
       <FilterBar
         active={activeFilter}
         onChange={setActiveFilter}
         counts={{
           all: total,
-          urgentes: allItems.filter(i => i.status === 'urgente').length,
-          pendientes: allItems.filter(i => !i.done).length,
+          pendientes: allItems.filter(i => !i.reserved).length,
         }}
       />
 
