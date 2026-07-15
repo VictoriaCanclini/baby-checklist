@@ -49,6 +49,7 @@ function TrashIcon() {
 
 const matchesFilter = (item, filter) => {
   if (filter === 'pendientes') return !item.reserved
+  if (filter === 'reservados') return item.reserved
   return true
 }
 

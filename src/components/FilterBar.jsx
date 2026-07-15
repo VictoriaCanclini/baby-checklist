@@ -1,6 +1,7 @@
 const FILTERS = [
   { id: 'all', label: 'Todos' },
   { id: 'pendientes', label: 'Pendientes' },
+  { id: 'reservados', label: 'Reservados' },
 ]
 
 export default function FilterBar({ active, onChange, counts }) {

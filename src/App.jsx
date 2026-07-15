@@ -178,8 +178,8 @@ export default function App() {
   return (
     <div className="app">
       <Header
-        title="Lista de regalos"
-        subtitle="¡Ayudanos a preparar la llegada del bebé!"
+        title="Valentino"
+        subtitle="¡Ayudanos a preparar la llegada de Valentino!"
         progress={progress}
         isAdmin={isAdmin}
         onAdminUnlock={handleAdminUnlock}
@@ -193,6 +193,7 @@ export default function App() {
         counts={{
           all: total,
           pendientes: allItems.filter(i => !i.reserved).length,
+          reservados: reserved,
         }}
       />
 
