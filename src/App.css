@@ -994,3 +994,43 @@
   height: 32px;
   font-size: 13px;
 }
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .drag-handle {
+    display: none;
+  }
+
+  .cat-header-actions {
+    display: none;
+  }
+
+  .filter-bar {
+    gap: 6px;
+  }
+
+  .filter-pill {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .filter-count {
+    font-size: 10px;
+    padding: 1px 5px;
+  }
+
+  .item-actions {
+    opacity: 1;
+  }
+
+  .checklist-item {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .checklist-item .item-actions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-bottom: 4px;
+  }
+}

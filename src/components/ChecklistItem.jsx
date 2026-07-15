@@ -44,6 +44,7 @@ export default function ChecklistItem({ item, isAdmin, onDelete, onEdit, onReser
   const [editUrl, setEditUrl] = useState(item.url || '')
   const [isReserving, setIsReserving] = useState(false)
   const [reserverName, setReserverName] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const inputRef = useRef(null)
   const nameInputRef = useRef(null)
 
@@ -138,9 +139,20 @@ export default function ChecklistItem({ item, isAdmin, onDelete, onEdit, onReser
             <button className="item-action-btn" onClick={startEdit} aria-label="Editar ítem">
               <PencilIcon />
             </button>
-            <button className="item-action-btn danger" onClick={onDelete} aria-label="Eliminar ítem">
-              <TrashIcon />
-            </button>
+            {confirmDelete ? (
+              <>
+                <button className="item-action-btn danger" onClick={onDelete} aria-label="Confirmar eliminar" title="Confirmar">
+                  <TrashIcon />
+                </button>
+                <button className="item-action-btn" onClick={() => setConfirmDelete(false)} aria-label="Cancelar">
+                  ✕
+                </button>
+              </>
+            ) : (
+              <button className="item-action-btn danger" onClick={() => setConfirmDelete(true)} aria-label="Eliminar ítem">
+                <TrashIcon />
+              </button>
+            )}
           </div>
         )}
       </div>
